@@ -1,0 +1,46 @@
+{% extends 'eventos/base.html' %}
+
+{% block jumbotron %}
+    {% include 'eventos/jumbotron.html' %}
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'eventos/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+		<div class="col-sm-10 col-md-10">
+			{% if palestras %}
+          <h4>Lista de palestras</h4>
+          {% for palestra in palestras %}
+              <div class="panel panel-default">
+                  <div class="panel-heading">
+                      {{ palestra.nome }}
+                  </div>
+                  <div class="panel-body">
+                      <p>Palestrante: {{ palestra.doscente }}</p>
+                      <p>Descrição: {{ palestra.descricao }}</p>
+                  </div>
+              </div>
+          {% endfor %}
+
+      {% endif %}
+      
+      {% if cursos %}
+          <h4>Lista de Cursos</h4>
+          {% for curso in cursos %}
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{ curso.nome }}
+                </div>
+                <div class="panel-body">
+                    <p>Palestrante: {{ curso.doscente }}</p>
+                    <p>Carga Horária: {{ curso.cargahoraria }}</p>
+                    <p>Descrição: {{ curso.descricao }}</p>
+                </div>
+              </div>
+          {% endfor %}
+      {% endif %}
+  			
+		</div>
+{% endblock content %}

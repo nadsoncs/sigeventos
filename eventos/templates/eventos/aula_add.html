@@ -1,0 +1,69 @@
+{% extends 'eventos/base.html' %}
+{% load staticfiles %}
+{% load eventos_extras %}
+{% block css_extra %}
+        <link rel="stylesheet" href="{% static 'css/datepicker.css' %}">
+{% endblock %}
+
+{% block js_extra %}
+    <script src="{% static 'js/moment.js' %}"></script>
+    <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#Pickerdt_inicio').datetimepicker({
+                locale: 'ru'
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block jumbotron %}
+    {% include 'eventos/jumbotron.html' %}
+{% endblock %}
+    
+{% block sidebar %}
+    {% include 'eventos/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="col-sm-10 col-md-10 ">
+    {% if form.errors %}
+        <div class="alert alert-danger text-center">
+            Corrija o{{ form.errors|pluralize }} erro{{ form.errors|pluralize }} abaixo.
+        </div>
+    {% endif %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Adicionar Cronograma
+            </h3>
+        </div>
+        <div class="panel-body">
+            <form role="form" class="form-horizontal" action="/cronograma_new/" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}</label>
+                        <div class="col-sm-5">
+                        {% if "dt_" in field.html_name %}
+                            <div class="input-group date" id="Picker{{ field.html_name }}">
+                                {{ field }}
+                                <span class="input-group-addon add-on">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                        </div>
+                        <div class="col-sm-5">
+                            <span class="help-block">{{field.errors.as_text}}</span>    
+                        </div>
+                    </div>
+                {% endfor %}
+            </form>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-success" ">Salvar</button>
+</div>
+{% endblock content %}

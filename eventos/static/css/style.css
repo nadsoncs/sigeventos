@@ -1,0 +1,74 @@
+/*MENU TOPO*/
+.navbar-inverse { background-color: #002878}
+.navbar-inverse .navbar-nav>.active>a:hover,.navbar-inverse .navbar-nav>li>a:hover, .navbar-inverse .navbar-nav>li>a:focus { background-color: #3B5998}
+.navbar-inverse .navbar-nav>.active>a,.navbar-inverse .navbar-nav>.open>a,.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:hover,.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:hover, .navbar-inverse .navbar-nav>.open>a:focus { background-color: #01184A}
+.dropdown-menu { background-color: #FFFFFF}
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus { background-color: #428BCA}
+.navbar-inverse { background-image: none; }
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus { background-image: none; }
+.navbar-inverse { border-color: #080808}
+.navbar-inverse .navbar-brand { 
+  color: #999999;
+  padding: 0px;
+}
+.navbar-inverse .navbar-brand img {
+  height: 50px;
+}
+.navbar-inverse .navbar-brand:hover { color: #FFFFFF}
+.navbar-inverse .navbar-nav>li>a { color: #FFFFFF}
+.navbar-inverse .navbar-nav>li>a:hover, .navbar-inverse .navbar-nav>li>a:focus { color: #FFFFFF}
+.navbar-inverse .navbar-nav>.active>a,.navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:hover, .navbar-inverse .navbar-nav>.open>a:focus { color: #FFFFFF}
+.navbar-inverse .navbar-nav>.active>a:hover, .navbar-inverse .navbar-nav>.active>a:focus { color: #FFFFFF}
+.dropdown-menu>li>a { color: #333333}
+.dropdown-menu>li>a:hover, .dropdown-menu>li>a:focus { color: #FFFFFF}
+.navbar-inverse .navbar-nav>.dropdown>a .caret { border-top-color: #999999}
+.navbar-inverse .navbar-nav>.dropdown>a:hover .caret { border-top-color: #FFFFFF}
+.navbar-inverse .navbar-nav>.dropdown>a .caret { border-bottom-color: #999999}
+.navbar-inverse .navbar-nav>.dropdown>a:hover .caret { border-bottom-color: #FFFFFF}
+
+/*MENU TOPO*/
+.footer {
+  background: #F2F2F2;
+  border-top-style: solid;
+  border-top-color: #E55818;
+  margin-top: 60px;
+  padding-top: 20px;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+  bottom: 0;
+  width: 100%;
+  height: 160px;
+}
+
+.thumbnail {
+	height: 250px;
+}
+
+.thumbnail>.caption {
+  //position: absolute;
+  //top:100px;
+}
+
+
+#conteudo {
+	margin-top: 70px;
+  min-height: 700px;
+}
+
+#lista {
+	margin-top: 120px;
+}
+
+div.panel-body.form {
+	padding: 15px 0;
+}
+
+.jumbotron {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+p.bg-info{
+  padding: 5px;
+}
+

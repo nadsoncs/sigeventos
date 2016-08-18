@@ -1,0 +1,31 @@
+{% extends 'eventos/base.html' %}
+{% load eventos_extras %}
+
+{% block content %}
+    {% if form.errors %}
+        <div class="alert alert-danger text-center">
+            Corrija o{{ form.errors|pluralize }} erro{{ form.errors|pluralize }} abaixo.
+        </div>
+    {% endif %}
+    <div class="row">
+    <div class="col-sm-6 col-md-6">
+        <form role="form" class="form-horizontal" action="/register/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2 class="text-center">Cadastro de usuário</h2>
+            {% for field in form %}
+            <div class="form-group">
+              {{field.label_tag|addclass:"col-sm-2 control-label"}}
+              <div class="col-sm-10">
+                  {{field|addclass:"form-control"}}
+                  <span class="help-block">{{field.errors.as_text}}</span>
+              </div>
+            </div>
+            {% endfor %}
+            <div class="col-md-offset-2 lead">
+                <button type="submit" class="btn btn-success"> Cadastrar</button>
+            </div>
+            
+        </form>
+    </div> 
+    </div>
+{% endblock content %}

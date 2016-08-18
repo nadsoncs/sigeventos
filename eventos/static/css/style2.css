@@ -1,0 +1,100 @@
+/* Bootstrap sticky footer
+-------------------------------------------------- */
+body {
+	margin-bottom: 50px;
+}
+
+.footer {
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.muted {
+	color: #999;
+}
+
+/* Table print options
+-------------------------------------------------- */
+@media screen {
+	td.success {
+		border: 1px solid #BDA;
+	}
+	
+	caption {
+		color: #fff;
+		background-color: #002878;
+		border-radius: 4px;
+	}
+}
+
+@media print {
+	td {
+		border: 1px solid;
+		vertical-align: middle;
+	}
+	
+	td.printSmall {
+		font-size: 8pt;
+	}
+	
+	tfoot > tr > td {
+		border: 0;
+	}
+	
+	.table > caption + thead > tr:first-child > th,
+	.table > thead > tr > th,
+	.table > caption {
+		border: 1px solid #000;
+	}
+}
+
+/* Custom page CSS
+-------------------------------------------------- */
+html {
+  font-family: "Franklin Gothic";
+}
+
+body {
+  font-family: "Franklin Gothic", Arial, Helvetica, sans-serif;
+}
+
+.navbar-brand {
+	padding: 0px;
+}
+
+.navbar-brand img {
+	height: 50px;
+}
+
+div.panel-body.form {
+	padding: 15px 0;
+}
+
+/* Colorful Input Groups
+-------------------------------------------------- */
+.input-group-addon.primary {
+    color: rgb(255, 255, 255);
+    background-color: rgb(0, 40, 120);
+    border-color: rgb(0, 32, 95);
+}
+.input-group-addon.success {
+    color: rgb(255, 255, 255);
+    background-color: rgb(92, 184, 92);
+    border-color: rgb(76, 174, 76);
+}
+.input-group-addon.info {
+    color: rgb(255, 255, 255);
+    background-color: rgb(0, 75, 224);
+    border-color: rgb(0, 66, 199);
+}
+.input-group-addon.warning {
+    color: rgb(255, 255, 255);
+    background-color: rgb(240, 173, 78);
+    border-color: rgb(238, 162, 54);
+}
+.input-group-addon.danger {
+    color: rgb(255, 255, 255);
+    background-color: rgb(217, 83, 79);
+    border-color: rgb(212, 63, 58);
+}

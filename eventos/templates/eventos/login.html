@@ -1,0 +1,30 @@
+{% extends 'eventos/base.html' %}
+{% load staticfiles %}
+{% load eventos_extras %}
+
+{% block css_extra %}
+    <link rel="stylesheet" href="{% static 'css/style-login.css' %}">
+{% endblock %}
+{% block content %}
+    
+    <div class="row col-md-4 col-md-offset-4" id="form-login">
+            {% if form.errors %}
+                <div class="alert alert-danger text-center">
+                    Corrija o{{ form.errors|pluralize }} erro{{ form.errors|pluralize }} abaixo.
+                </div>
+            {% endif %}
+            <div class="alert alert-danger hidden" id="print-erros" role="alert"></div>
+            <form class="form-signin" method="post" action="/login/" id="login">
+                <h2>Identifique-se</h2>
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{field.label_tag|addclass:"control-label hidden"}}
+                        {{field|addclass:"form-control"|addplaceholder:field.label}}
+                    </div>
+                {% endfor %}
+                <button class="btn btn-lg btn-success btn-block" type="submit" id="botao-login">Entrar</button>
+            </form>
+            <button type="button" class="btn btn-link btn-block btn-lg">Esqueceu a senha?</button>
+        </div>
+{% endblock content %}

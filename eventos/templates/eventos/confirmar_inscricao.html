@@ -1,0 +1,44 @@
+{% extends 'eventos/base.html' %}
+{% block jumbotron %}
+    {% include 'eventos/jumbotron.html' %}
+{% endblock %}
+    
+{% block sidebar %}
+    {% include 'eventos/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+	<div class="col-sm-10 col-md-10">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4>Confirmar Inscrições</h4>
+        </div>
+
+        <div class="panel-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nº Inscrição</th>
+                <th>Nome</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pendente in pendentes %}
+                  <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ pendente.pk }}</td>
+                    <td>{{ pendente }}</td>
+                    <td>
+                      <button type="button" class="btn btn-success">Confirmar</button>
+                      <button type="button" class="btn btn-danger">Cancelar</button>
+                    </td>
+                  </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+    </div>
+  </div>
+{% endblock content %}

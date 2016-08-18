@@ -1,0 +1,69 @@
+{% extends 'eventos/base.html' %}
+
+{% block content %}
+	<div class="row">
+		<div class="col-sm-2 col-md-2">
+      		<img class="img-thumbnail img-responsive"  src="{{ evento.logomarca.url }}" >
+          <ul class="nav nav-pills nav-stacked">
+            <li class="active"><a href="#"><span class="glyphicon glyphicon-plus"></span> Inscrever-se</a></li>
+            <li><a href="#">Programação</a></li>
+          </ul>
+		</div>
+		<div class="col-sm-10 col-md-10">
+			<div class="panel panel-default">
+  				<div class="panel-heading">
+  					<h2>{{ evento.nome }} Programação Completa</h2>
+  				</div>
+
+  				<div class="panel-body">
+            {% if palestras %}
+            <h4>Lista de palestras</h4>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Palestrante</th>
+                  <th>Descrição</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for palestra in palestras %}
+                <tr>
+                  <th>{{ palestra.nome }}</th>
+                  <th>{{ palestra.doscente }}</th>
+                  <th>{{ palestra.descricao }}</th>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+            {% if cursos %}
+            <h4>Lista de Cursos</h4>
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Professor</th>
+                  <th>Descrição</th>
+                  <th>Carga horária</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for curso in cursos %}
+                <tr>
+                  <th>{{ curso.nome }}</th>
+                  <th>{{ curso.doscente }}</th>
+                  <th>{{ curso.descricao }}</th>
+                  <th>{{ curso.cargahoraria }}</th>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            {% endif %}
+  				</div>
+			</div>
+			
+			<a href="{% url 'eventos.views.evento_inscricao' pk=evento.pk %}" class="btn btn-success btn-lg" role="button"><span class="glyphicon glyphicon-plus"></span> Inscrever-se</a>	
+		</div>	
+	</div>
+{% endblock content %}

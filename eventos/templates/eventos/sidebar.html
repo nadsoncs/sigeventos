@@ -1,0 +1,27 @@
+<div class="col-md-2 sidebar">
+	<ul class="nav nav-pills nav-stacked">
+		{% if papel == 'P' %}
+			<li class="active"><a href="#">Participante</a></li>
+			<li><a href="#"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> Conteúdo</a></li>
+			<li><a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Mensagens</a></li>
+			<li><a href="{% url 'eventos:evento_atividade' evento.pk %}"><span class="glyphicon glyphicon-hourglass"></span> Programação</a></li>
+		{% elif papel == 'O' %}
+			<li class="active"><a href="#">Organizador</a></li>
+			<li><a href="#"><span class="" aria-hidden="true"></span> Editar Dados</a></li>
+			<li><a href="#"><span class="glyphicon glyphicon-check" aria-hidden="true"></span> Inscrições</a></li>
+			<li><a href="#"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Impressos</a></li>
+			<li><a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Mensagens</a></li>
+			<li><a href="{% url 'eventos:evento_atividade' evento.pk %}"><span class="glyphicon glyphicon-hourglass"></span> Programação</a></li>
+		{% elif papel == 'D' %}
+			<li class="active"><a href="#">Doscente</a></li>
+			<li><a href="#"><span class="glyphicon glyphicon-education" aria-hidden="true"></span> Conteúdo</a></li>
+			<li><a href="#"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> Arquivos</a></li>
+			<li><a href="#"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Presença</a></li>
+			<li><a href="#"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Mensagens</a></li>
+			<li><a href="{% url 'eventos:evento_atividade' evento.pk %}"><span class="glyphicon glyphicon-hourglass"></span> Programação</a></li>
+		{% else %}
+			<li class="active"><a href="{% url 'eventos:evento_inscricao' evento.pk %}"><span class="glyphicon glyphicon-plus"></span> Inscrever-se</a></li>
+            <li><a href="{% url 'eventos:evento_atividade' evento.pk %}"><span class="glyphicon glyphicon-hourglass"></span> Programação</a></li>
+		{%endif %}
+	</ul>	
+</div>

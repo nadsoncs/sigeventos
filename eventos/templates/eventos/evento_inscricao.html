@@ -1,0 +1,44 @@
+{% extends 'eventos/base.html' %}
+{% load eventos_extras %}
+
+{% block jumbotron %}
+    {% include 'eventos/jumbotron.html' %}
+{% endblock %}
+
+{% block sidebar %}
+    {% include 'eventos/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-10 ">
+        {% if form.errors %}
+            <div class="alert alert-danger text-center">
+                Corrija o{{ form.errors|pluralize }} erro{{ form.errors|pluralize }} abaixo.
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Inscrição no evento
+                </h3>
+            </div>
+
+            <form role="form" class="form-horizontal" method="post">
+            <div class="panel-body">
+                <h4>Qual atividade deseja participar?</h4>
+                {% csrf_token %}
+            
+                {% for field in form.atividades %}
+                        <div class="radio">
+                            <label>
+                               {{ field }}
+                            </label>
+                        </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+        <button type="submit" class="btn btn-success" ">Salvar</button>
+        </form>
+    </div>
+{% endblock content %}

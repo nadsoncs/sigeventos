@@ -1,0 +1,45 @@
+{% extends 'eventos/impress.html' %}
+{% block content %}
+  <div class="col-sm-12 col-md-12"> 
+      {% for aprovado in aprovados %}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h1 class="text-center"><strong>{{ evento.nome }}</strong></h1>   
+          </div>
+          <div class="panel-body">
+            <br>
+            <br>
+            <p>Certifico que <strong>{{ aprovado.inscricao }}</strong> participou do curso <strong>{{ atividade }}</strong>, realizado no período de {{ evento.dt_inicio }} à {{ evento.dt_fim }}, com carga horáriade de <strong>{{ atividade.cargahoraria }} horas</strong>.</p>
+            <br>
+            <br>
+            <br>
+            <div class="col-sm-6 col-md-6">
+              <p class="text-center">_________________________________</p>
+              <p class="text-center">Coordenador do Evento</p>
+            </div>
+            <div class="col-sm-6 col-md-6">
+              <p class="text-center">_________________________________</p>
+              <p class="text-center">{{ atividade.doscente }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h1 class="text-center"><strong>{{ evento.nome }}</strong></h1>   
+      </div>
+      <div class="panel-body">
+        <br>
+        <br>
+        <p>Certifico que <strong>{{ atividade.doscente }}</strong> ministrou o curso <strong>{{ atividade }}</strong>, realizado no período de {{ evento.dt_inicio }} à {{ evento.dt_fim }}, com carga horáriade de <strong>{{ atividade.cargahoraria }} horas</strong>.</p>
+        <br>
+        <br>
+        <br>
+        <p class="text-center">_________________________________</p>
+        <p class="text-center">Coordenador do Evento</p>
+            
+      </div>
+    </div>   
+  </div>
+{% endblock content %}
+

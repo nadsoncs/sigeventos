@@ -1,0 +1,93 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="utf-8">
+	<title>SIG-Eventos</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="author" content="Nadson Cerqueira">
+	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}">
+	<link href="{% static 'css/icomoon.css' %}" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	{% block css_extra %}
+    {% endblock %}
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	{% block js_extra %}
+    {% endblock %}
+</head>
+<body>
+	<!--FIM MENU TOPO -->
+	<nav class="navbar navbar-inverse navbar-fixed-top " role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<a href="#" class="navbar-brand"><img alt="Logotipo da UFSB" src="{% static 'img/ufsb_logo_h_branco1.png' %}"></a>
+			</div>
+	    	
+	    	<ul class="nav navbar-nav navbar-right">
+	    		{% if user.is_staff %} 
+	    			<li><a href="{% url 'admin:index' %}" class="blog-nav-item">Admin</a></li> 
+	    		{% endif %}
+	    		{% if user.is_authenticated %}
+                	<li><a class="blog-nav-item" href="{% url 'eventos:editar_perfil' %}">Editar Perfil</a></li>
+                	<li><a class="blog-nav-item" href="/logout/">Logout</a></li>
+            	{% else %}
+                	<li><a class="blog-nav-item" href="/login/">Login</a></li>
+                	<li><a class="blog-nav-item" href="/register/">Registrar</a></li>
+            	{% endif %}
+	    	</ul>
+		</div>
+	</nav>
+	<!--MENU TOPO -->
+
+	<!--CONTEÚDO -->
+	<div class="container" id="conteudo">
+		{% block jumbotron %}
+		{% endblock %}
+		{% if messages %}
+			<div class="row clearfix">
+			<div class="col-sm-12 col-md-12">
+    		{% for message in messages %}
+        		<div class="alert 
+        		{% if message.tags %} 
+        			{% if message.tags == 'error' %}
+						alert-danger
+					{% else %}
+						alert-{{ message.tags }}
+        			{% endif%} 
+        			}
+        		{% else %} 
+        			alert-info 
+        		{% endif %} 
+        		alert-dismissible" role="alert">
+        			<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        			
+        			{{ message }}
+        		</div>
+    		{% endfor %}
+    		</div>
+    		</div>
+		{% endif %}
+		<div class="row clearfix">
+			{% block sidebar %}
+            {% endblock %}
+			{% block content %}
+            {% endblock %}
+		</div>
+	</div>
+	<!--FIM CONTEÚDO -->
+
+	<!--RODAPÉ -->
+	<footer class="footer ">
+      <div class="container">
+         <div class="row clearfix">
+         	<div class="col-sm-6 col-sm-offset-3">
+         		<img src="{% static 'img/logo-rodape.png' %}" class="img-responsive">
+         	</div>
+         </div>
+      </div>
+   </footer>
+   <!--FIM RODAPÉ -->
+</body>
+</html>

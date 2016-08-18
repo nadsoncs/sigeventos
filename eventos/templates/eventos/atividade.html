@@ -1,0 +1,38 @@
+{% extends 'eventos/base.html' %}
+{% block jumbotron %}
+    {% include 'eventos/jumbotron.html' %}
+{% endblock %}
+    
+{% block sidebar %}
+    {% include 'eventos/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+	<div class="col-sm-10 col-md-10">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4>{{ atividade.nome }}</h4>
+          <p>{{ atividade.doscente }}</p>
+        </div>
+
+        <div class="panel-body">
+          <p>{{ atividade.descricao }}</p>
+          {% if cronogramas %}
+             <p class="bg-info"><span class="glyphicon glyphicon-hourglass" aria-hidden="true"> <strong>Cronograma</strong></p>
+             <ol>
+             {% for cronograma in cronogramas %}
+                <li>{{ cronograma.descricao }}</li>
+             {% endfor %}
+             </ol>
+          {% endif %}
+          {% if arquivos %}
+             <p class="bg-info"><span class="glyphicon glyphicon-file" aria-hidden="true"> <strong>Arquivos</strong></p>
+             {% for arquivo in arquivos %}
+                <p><a href="{{ arquivo.upload }}">{{ arquivo.filename }}</a></p>
+             {% endfor %}
+             
+          {% endif %}
+        </div>
+    </div>
+  </div>
+{% endblock content %}

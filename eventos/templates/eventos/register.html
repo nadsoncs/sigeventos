@@ -1,0 +1,44 @@
+{% extends 'eventos/base.html' %}
+{% load eventos_extras %}
+
+{% block content %}
+    
+    <div class="row">
+    <div class="col-md-12 ">
+        {% if form.errors %}
+            <div class="alert alert-danger text-center">
+                Corrija o{{ form.errors|pluralize }} erro{{ form.errors|pluralize }} abaixo.
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Cadastro de usuários
+                </h3>
+            </div>
+        
+            <form role="form" class="form-horizontal" action="/register/" method="post">
+            <div class="panel-body">
+                {% csrf_token %}
+            
+                {% for field in form %}
+                    <div class="form-group">
+                    <!--<label for="id" class="col-sm-4 control-label">Usuário SIG</label>-->
+                        {{field.label_tag|addclass:"col-sm-2 control-label"}}
+                        <div class="col-sm-3">
+                            {{field|addclass:"form-control"}}
+                        </div>
+                        <div class="col-sm-8">
+                            <span class="help-block">{{field.errors.as_text}}</span>    
+                        </div>
+                        
+                    </div>
+                {% endfor %}
+            </div>
+            
+        </div>
+        <button type="submit" class="btn btn-success" ">Salvar</button>
+        </form>
+    </div> 
+    </div>
+{% endblock content %}

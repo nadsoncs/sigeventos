@@ -1,0 +1,39 @@
+{% extends 'eventos/impress.html' %}
+{% block content %}
+    <div class="col-sm-12 col-md-12">	
+      {% for atividade in atividades %}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h1 class="text-center">
+              <strong>{{ evento.nome }}</strong>
+            </h1>
+            <p><strong>Curso: </strong>{{ atividade }}</p>        
+            <p><strong>Professor: </strong>{{ atividade.doscente }}</p>
+            <p><strong>Atividade: </strong>__________________________________________________</p>
+            <p><strong>Data: </strong>__/__/____</p>   
+          </div>
+          <div class="panel-body">
+            <div class="table-responsive">
+              <table class="table .table-bordered">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Assinatura</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for inscrito in inscritos_atividade %}
+                  <tr>
+                    <td>{{ inscrito.inscricao }}</td>
+                    <td>___________________________________________________________</td>
+                  </tr>
+                  {% endfor%}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+		</div>
+{% endblock content %}
+
