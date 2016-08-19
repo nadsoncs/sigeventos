@@ -23,9 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'o2+wuhdqsf#ss^=_vh9=)c*mo7#*g5jkgv2wl31fd^sj8m-*gw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = False
 
 
 # Application definition
@@ -152,15 +150,7 @@ STATIC_URL = '/static/'
 #STATICFILES_DIRS = (
 #    os.path.join(BASE_DIR, 'static'),
 #)
-#heroku settings 2
-#PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-#STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
-#STATIC_URL = '/static/'
-
-# Extra places for collectstatic to find static files.
-#STATICFILES_DIRS = (
-#    os.path.join(PROJECT_ROOT, 'static'),
-#)
+try:
+    from sigeventos.local_settings import *
+except ImportError:
+    pass
