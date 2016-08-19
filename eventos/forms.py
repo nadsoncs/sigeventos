@@ -3,10 +3,7 @@ from django.contrib.auth.models import User
 from .models import *
 from django.core.mail import send_mail
 from django.conf import settings
-#class RegistrerForm(forms.Form):
-#    user = forms.CharField(label='Usuário')
-#    email = forms.EmailField(label='E-mail')
-#    password = forms.CharField(label='Senha', widget=forms.PasswordInput)
+
 class RegistrerForm(forms.ModelForm):
 	class Meta:
 		model = User
@@ -81,10 +78,11 @@ class EventoForm(forms.ModelForm):
 class AulaForm(forms.ModelForm):
 	class Meta:
 		model = Aula
-		fields = ('descricao', 'dt_inicio', 'dt_fim')
+		fields = ('descricao', 'dt_inicio', 'hr_inicio', 'hr_fim')
 		widgets = {
-            'dt_inicio': forms.DateInput(attrs={'class':'datepicker form-control'}),
-            'dt_fim': forms.DateInput(attrs={'class':'datepicker form-control'}),
+            'dt_inicio': forms.DateTimeInput(attrs={'class':'datepicker form-control'}),
+            'hr_inicio': forms.TimeInput(attrs={'class':'datepicker form-control'}),
+            'hr_fim': forms.TimeInput(attrs={'class':'datepicker form-control'}),
         }
 
 class ArquivoForm(forms.ModelForm):

@@ -84,8 +84,19 @@ def login_view(request):
             user = form.cleaned_data['user']
             password = form.cleaned_data['password']
             user_authenticated = authenticate(username=user, password=password)
-            login(request, user_authenticated)
-            return HttpResponseRedirect('/')
+            if user_authenticated is not None:
+                if user_authenticated.is_active:
+                    login(request, user_authenticated)
+                    if UserProfile.objects.filter(user=request.user).exists():
+                        return HttpResponseRedirect('/')
+                    else:
+                        return HttpResponseRedirect(reverse('eventos:editar_perfil'))
+                else:
+                    messages.error(request, 'Sua conta de usuário está inativada')
+                    return HttpResponseRedirect(reverse('eventos:login'))
+            else:
+                messages.error(request, 'Usuário ou senha inválido')
+                return HttpResponseRedirect(reverse('eventos:login'))
     else:
         form = LoginForm()
     context = {
@@ -99,25 +110,29 @@ def evento_detalhes(request, pk):
         if Inscricao.objects.filter(inscrito=request.user, evento=evento).exists():
             inscrito = Inscricao.objects.get(inscrito=request.user, evento=evento)
             papel = inscrito.papel
+            atividade = evento.get_atividade(request.user)
         else:
             papel = ''
+            atividade = ''
     else:
         papel = ''
-    
+        atividade = ''
     context = {
         'evento': evento,
         'papel':papel,
+        'atividade':atividade,
     }
     return render(request, 'eventos/evento_detalhes.html', context)
 
 @login_required(login_url='/login/')
 def evento_edit(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
-    inscrito = Inscricao.objects.filter(inscrito=request.user)
-    if(inscrito):
-        papel = inscrito.papel
+    if evento.is_organizador(request.user):
+        pass
     else:
-        papel = ''
+        messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk)))
+
     if request.method =="POST":
         form = EventoForm(request.POST, instance=evento)
         if form.is_valid():
@@ -130,7 +145,7 @@ def evento_edit(request, pk):
     context = {
         'evento': evento,
         'form':form,
-        'papel':papel,
+        'papel':'O',
     }  
     return render(request, 'eventos/evento_edit.html', context)
 
@@ -139,7 +154,7 @@ def evento_inscricao(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
     if Inscricao.objects.filter(inscrito=request.user, evento=evento).exists():
         messages.error(request, 'Usuário já está inscrito no evento!')
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk)))
     else:
         papel = ''
     if request.method =="POST":
@@ -169,9 +184,12 @@ def evento_inscricao(request, pk):
 @login_required(login_url='/login/')
 def confirmar_inscricao(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
-    if not Inscricao.objects.filter(inscrito=request.user, evento=evento, papel='O').exists():
-        messages.error(request, 'Acesso negado! Área restrita aos coordenadores do evento')
-        return HttpResponseRedirect('/')
+    
+    if evento.is_organizador(request.user):
+        pass
+    else:
+        messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk)))
 
     pendentes = Inscricao.objects.filter(evento=evento, status='S')
     context = {
@@ -181,14 +199,45 @@ def confirmar_inscricao(request, pk):
     }
     return render(request, 'eventos/confirmar_inscricao.html', context)
 
-
+def inscricao_update(request, pk):
+    inscricao = get_object_or_404(Inscricao, pk=pk)
+    if inscricao.evento.is_organizador(request.user):
+        pass
+    else:
+        messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk,)))
+    if Inscricao_atividade.objects.filter(inscricao=inscricao).exists():
+        insc_atv = Inscricao_atividade.objects.get(inscricao=inscricao)
+        #verifica o número de vagas
+        if (Inscricao_atividade.objects.filter(inscricao=inscricao).count() < insc_atv.atividade.num_vagas):
+            inscricao.status = 'C'
+            inscricao.save()
+            messages.success(request, 'Inscrição confirmada!')
+            return HttpResponseRedirect(reverse('eventos:confirmar_inscricao', args=(inscricao.evento.pk,)))
+        else:
+            messages.error(request, 'Inscrição não confirmada, o curso desejado não dipoe de vagas.')
+            return HttpResponseRedirect(reverse('eventos:confirmar_inscricao', args=(inscricao.evento.pk,)))
+    
+def inscricao_delete(request, pk):
+    inscricao = get_object_or_404(Inscricao, pk=pk)
+    if inscricao.evento.is_organizador(request.user):
+        pass
+    else:
+        messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk,)))
+        
+    inscricao.delete()
+    messages.success(request, 'Inscrição cancelada.')
+    return HttpResponseRedirect(reverse('eventos:confirmar_inscricao', args=(inscricao.evento.pk,)))
 
 @login_required(login_url='/login/')
 def atividade_new(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
-    if not Inscricao.objects.filter(inscrito=request.user, evento=evento, papel='O').exists():
-        messages.error(request, 'Acesso negado! Área restrita aos coordenadores do evento')
-        return HttpResponseRedirect('/')
+    if evento.is_organizador(request.user):
+        pass
+    else:
+        messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk,)))
 
     if request.method =="POST":
         form = AtividadeForm(request.POST)
@@ -211,7 +260,7 @@ def atividade_new(request, pk):
     }
     return render(request, 'eventos/atividade_add.html', context)
 
-@login_required(login_url='/login/')
+#Lista a programação do evento
 def evento_atividade(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
     palestras = Atividade.objects.filter(evento=evento, tipo='P')
@@ -232,18 +281,16 @@ def evento_atividade(request, pk):
 @login_required(login_url='/login/')
 def atividade_detalhes(request, pk):
     atividade = get_object_or_404(Atividade, pk=pk)
-    if Inscricao.objects.filter(inscrito=request.user, evento=atividade.evento, status='C').exists():
-        inscrito = Inscricao.objects.get(inscrito=request.user, evento=evento)
-        papel = inscrito.papel
-        if not (papel == 'O'):
-            if not Inscritos_atividade.objects.filter(atividade=atividade, inscricao=inscrito).exists():
-                messages.error(request, 'Acesso negado!, Você não está inscrito neste curso')
-                return HttpResponseRedirect('/')
-                #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk)))   
+    if atividade.evento.is_organizador(request.user):
+        pass
+    elif atividade.is_doscente(request.user):
+        pass
+    elif atividade.is_aluno(request.user):
+        pass
     else:
-        messages.error(request, 'Acesso negado!, Você não está inscrito neste evento')
-        #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
-        return HttpResponseRedirect('/')
+        messages.error(request, 'Acesso negado! Você não está inscrito nessa atividade.')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
+        #return HttpResponseRedirect('/')
 
     inscrito = Inscricao.objects.get(inscrito=request.user, evento=atividade.evento, status='C')
     aulas = Aula.objects.filter(atividade=atividade)
@@ -261,28 +308,21 @@ def atividade_detalhes(request, pk):
 @login_required(login_url='/login/')
 def aula_new(request, pk):
     atividade =get_object_or_404(Atividade, pk=pk)
-    if Inscricao.objects.filter(inscrito=request.user, evento=atividade.evento, status='C').exists():
-        inscrito = Inscricao.objects.get(inscrito=request.user, evento=evento)
-        papel = inscrito.papel
-        if (papel != 'D'):
-            messages.error(request, 'Acesso negado!, Área restrita somente a palestrantes e professores')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk))) 
-        if not Inscritos_atividade.objects.filter(atividade=atividade, inscricao=inscrito).exists():
-            messages.error(request, 'Acesso negado!, Você não está inscrito nessa atividade')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk)))
+    if atividade.is_doscente(usuario=request.user):
+        pass
     else:
-        messages.error(request, 'Acesso negado!, Você não está inscrito neste evento')
-        #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
-        return HttpResponseRedirect('/')
+        messages.error(request, 'Acesso negado! Você não está inscrito como doscente desta atividade')
+        #return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
 
     if request.method =="POST":
         form = AulaForm(request.POST)
         if form.is_valid():
-            evento = form.save(commit=False)
-            evento.save()
-            return HttpResponseRedirect(reverse('eventos:atividade_detalhes', args=(atividade.pk)))
+            aula = form.save(commit=False)
+            aula.atividade = atividade
+            aula.save()
+            messages.success(request, 'Aula cadastrada com sucesso')
+            return HttpResponseRedirect(reverse('eventos:atividade_detalhes', args=(pk,)))
     else:
         form = AulaForm()
         papel = 'D'
@@ -298,25 +338,14 @@ def aula_new(request, pk):
 def presentes(request, pk):
     aula = get_object_or_404(Aula, pk=pk)
     evento = aula.atividade.evento
-    if Inscricao.objects.filter(inscrito=request.user, evento=evento, status='C').exists():
-        inscrito = Inscricao.objects.get(inscrito=request.user, evento=evento)
-        papel = inscrito.papel
-        if (papel != 'D'):
-            messages.error(request, 'Acesso negado!, Área restrita somente a palestrantes e professores')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk))) 
-        if not Inscritos_atividade.objects.filter(atividade=aula.atividade, inscricao=inscrito).exists():
-            messages.error(request, 'Acesso negado!, Você não está inscrito nessa atividade')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk)))
+    if aula.atividade.is_doscente(usuario=request.user):
+        pass
     else:
-        messages.error(request, 'Acesso negado!, Você não está inscrito neste evento')
-        #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
-        return HttpResponseRedirect('/')
+        messages.error(request, 'Acesso negado! Você não está inscrito como doscente desta atividade')
+        #return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
 
     inscritos = Inscricao_atividade.objects.filter(atividade=aula.atividade)
-    #extras = Inscricao_atividade.objects.filter(atividade=cronograma.atividade).count()
-    #PresencaFormSet = modelformset_factory(Presenca, form=PresencaForm, extra=extras)
     if request.method =="POST":
         form = request.POST
         numform = form.cleaned_data['form-num']
@@ -327,11 +356,8 @@ def presentes(request, pk):
             presenca = Presenca(participante=participante, aula=aula, presente=presente)
             presenca.save()
             x = x+1
-        return HttpResponseRedirect(reverse('eventos:atividade_detalhes', args=(aula.atividade.pk)))
-    #else:
-        #formset = PresencaFormSet(queryset=Inscricao_atividade.objects.filter(atividade=cronograma.atividade))
-    #    formset = PresencaFormSet(queryset=Presenca.objects.filter(cronograma=cronograma, participante__inscricao_atividade__atividade=cronograma.atividade))
-    #    papel = 'D'
+        return HttpResponseRedirect(reverse('eventos:atividade_detalhes', args=(aula.atividade.pk,)))
+    
     context = {
         'evento':aula.atividade.evento,
         'atividade':aula.atividade,
@@ -344,21 +370,12 @@ def presentes(request, pk):
 @login_required(login_url='/login/')
 def arquivo_new(request, pk):
     atividade =get_object_or_404(Atividade, pk=pk)
-    if Inscricao.objects.filter(inscrito=request.user, evento=atividade.evento, status='C').exists():
-        inscrito = Inscricao.objects.get(inscrito=request.user, evento=atividade.evento)
-        papel = inscrito.papel
-        if (papel != 'D'):
-            messages.error(request, 'Acesso negado!, Área restrita somente a palestrantes e professores')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk))) 
-        if not Inscritos_atividade.objects.filter(atividade=atividade, inscricao=inscrito).exists():
-            messages.error(request, 'Acesso negado!, Você não está inscrito nessa atividade')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk)))
+    if atividade.is_doscente(usuario=request.user):
+        pass
     else:
-        messages.error(request, 'Acesso negado!, Você não está inscrito neste evento')
-        #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
-        return HttpResponseRedirect('/')
+        messages.error(request, 'Acesso negado! Você não está inscrito como doscente desta atividade')
+        #return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
 
     if request.method =="POST":
         form = ArquivoForm(request.POST, request.FILES)
@@ -366,7 +383,7 @@ def arquivo_new(request, pk):
             arquivo = form.save(commit=False)
             arquivo.atividade = atividade
             arquivo.save()
-            return HttpResponseRedirect(reverse('eventos:atividade_detalhes', args=(atividade.pk)))
+            return HttpResponseRedirect(reverse('eventos:atividade_detalhes', args=(atividade.pk,)))
     else:
         form = ArquivoForm()
         papel = 'D'
@@ -381,17 +398,13 @@ def arquivo_new(request, pk):
 @login_required(login_url='/login/')
 def impressos(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
-    if Inscricao.objects.filter(inscrito=request.user, evento=evento, status='C').exists():
-        inscrito = Inscricao.objects.get(inscrito=request.user, evento=evento)
-        papel = inscrito.papel
-        if (papel != 'O'):
-            messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk)))   
+
+    if evento.is_organizador(request.user):
+        pass
     else:
-        messages.error(request, 'Acesso negado!, Você não está inscrito neste evento')
-        #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
-        return HttpResponseRedirect('/')
+        messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
+#            return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk,)))
 
     inscritos_atividade = Inscricao_atividade.objects.filter(atividade__evento=evento)
     atividades = Atividade.objects.filter(evento=evento)
@@ -406,17 +419,12 @@ def impressos(request, pk):
 @login_required(login_url='/login/')
 def lista_participantes(request, ev, at):
     evento = get_object_or_404(Evento, pk=ev)
-    if Inscricao.objects.filter(inscrito=request.user, evento=evento, status='C').exists():
-        inscrito = Inscricao.objects.get(inscrito=request.user, evento=evento)
-        papel = inscrito.papel
-        if (papel != 'O'):
-            messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk)))   
+    if evento.is_organizador(request.user):
+        pass
     else:
-        messages.error(request, 'Acesso negado!, Você não está inscrito neste evento')
-        #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
-        return HttpResponseRedirect('/')
+        messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
+#            return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk,)))
 
     inscritos_atividade = Inscricao_atividade.objects.filter(atividade=at)
     atividades = Atividade.objects.filter(evento=evento)
@@ -431,17 +439,12 @@ def lista_participantes(request, ev, at):
 @login_required(login_url='/login/')
 def crachas(request, ev, at):
     evento = get_object_or_404(Evento, pk=ev)
-    if Inscricao.objects.filter(inscrito=request.user, evento=evento, status='C').exists():
-        inscrito = Inscricao.objects.get(inscrito=request.user, evento=evento)
-        papel = inscrito.papel
-        if (papel != 'O'):
-            messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk)))   
+    if evento.is_organizador(request.user):
+        pass
     else:
-        messages.error(request, 'Acesso negado!, Você não está inscrito neste evento')
-        #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
-        return HttpResponseRedirect('/')
+        messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
+#            return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk,)))
 
     inscritos_atividade = Inscricao_atividade.objects.filter(atividade=at)
     atividades = Atividade.objects.filter(evento=evento)
@@ -456,17 +459,12 @@ def crachas(request, ev, at):
 @login_required(login_url='/login/')
 def certificados(request, ev, at):
     evento = get_object_or_404(Evento, pk=ev)
-    if Inscricao.objects.filter(inscrito=request.user, evento=evento, status='C').exists():
-        inscrito = Inscricao.objects.get(inscrito=request.user, evento=evento)
-        papel = inscrito.papel
-        if (papel != 'O'):
-            messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
-            return HttpResponseRedirect('/')
-            #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk)))   
+    if evento.is_organizador(request.user):
+        pass
     else:
-        messages.error(request, 'Acesso negado!, Você não está inscrito neste evento')
-        #return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(atividade.evento.pk,)))
-        return HttpResponseRedirect('/')
+        messages.error(request, 'Acesso negado! Essa função só está disponível para organizadores.')
+#            return HttpResponseRedirect('/')
+        return HttpResponseRedirect(reverse('eventos:evento_detalhes', args=(pk,)))
 
     inscritos_atividade = Inscricao_atividade.objects.filter(atividade=at)
     atividade = Atividade.objects.get(pk=at)

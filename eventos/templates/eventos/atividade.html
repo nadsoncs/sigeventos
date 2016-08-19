@@ -17,20 +17,41 @@
 
         <div class="panel-body">
           <p>{{ atividade.descricao }}</p>
-          {% if cronogramas %}
-             <p class="bg-info"><span class="glyphicon glyphicon-hourglass" aria-hidden="true"> <strong>Cronograma</strong></p>
-             <ol>
-             {% for cronograma in cronogramas %}
-                <li>{{ cronograma.descricao }}</li>
+          {% if aulas %}
+              <br>
+             <div class="row">
+             <div class="col-sm-12 col-md-12">
+             <p class="bg-info"><span class="glyphicon glyphicon-hourglass" aria-hidden="true"></span> <strong>Cronograma</strong></p>
+             {% for aula in aulas %}
+                <div class="row">
+                  <div class="col-sm-7 col-md-7">
+                    <a class="btn btn-link" href="#" role="button">{{ aula.descricao }}</a>
+                  </div>
+                  {% if papel == 'D' %}
+                  <div class="col-sm-5 col-md-5">
+                    <a class="btn btn-success btn-sm" href="{% url 'eventos:presentes' aula.pk %}" role="button"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Presentes</a>
+                  </div>
+                  {% endif %}
+                </div>                
              {% endfor %}
-             </ol>
+             </div>
+             </div>
+             
           {% endif %}
           {% if arquivos %}
-             <p class="bg-info"><span class="glyphicon glyphicon-file" aria-hidden="true"> <strong>Arquivos</strong></p>
+          <br>
+          <div class="row">
+          <div class="col-sm-12 col-md-12">
+             <p class="bg-info"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> <strong>Arquivos</strong></p>
              {% for arquivo in arquivos %}
-                <p><a href="{{ arquivo.upload }}">{{ arquivo.filename }}</a></p>
+              <div class="row">
+              <div class="col-sm-12 col-md-12">
+                <a class="btn btn-link" href="{{ arquivo.upload }}" role="button">{{ arquivo.filename }}</a>
+              </div>
+              </div>
              {% endfor %}
-             
+          </div>
+          </div>   
           {% endif %}
         </div>
     </div>

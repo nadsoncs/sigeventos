@@ -31,8 +31,8 @@
                     <td>{{ pendente.pk }}</td>
                     <td>{{ pendente }}</td>
                     <td>
-                      <button type="button" class="btn btn-success">Confirmar</button>
-                      <button type="button" class="btn btn-danger">Cancelar</button>
+                      <a class="btn btn-success" href="{% url 'eventos:inscricao_update' pendente.pk %}" role="button"><span class="glyphicon glyphicon-ok"></span> Confirmar</a>
+                      <a class="btn btn-danger" href="{% url 'eventos:inscricao_delete' pendente.pk %}" role="button"><span class="glyphicon glyphicon-remove"></span> Cancelar</a>
                     </td>
                   </tr>
               {% endfor %}

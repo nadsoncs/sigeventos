@@ -35,11 +35,11 @@
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">
-                Adicionar Cronograma
+                Adicionar Aula
             </h3>
         </div>
         <div class="panel-body">
-            <form role="form" class="form-horizontal" action="/cronograma_new/" method="post">
+            <form role="form" class="form-horizontal" method="post">
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="form-group">
@@ -61,9 +61,10 @@
                         </div>
                     </div>
                 {% endfor %}
-            </form>
+            
         </div>
     </div>
     <button type="submit" class="btn btn-success" ">Salvar</button>
+    </form>
 </div>
 {% endblock content %}
